@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
+import React, { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -27,6 +28,8 @@ import {
   InputOTPGroup,
   InputOTPSlot,
 } from "@/components/ui/input-otp";
+import { useNavigate } from "react-router-dom";
+import { useUser } from "@/context/userContext";
 
 const FormSchema = z.object({
   pin: z.string().min(6, {
@@ -34,22 +37,47 @@ const FormSchema = z.object({
   }),
 });
 
-export function InputOTPForm() {
+export function InputOTPForm({ setOtpSent, number }) {
   const form = useForm({
     resolver: zodResolver(FormSchema),
     defaultValues: {
       pin: "",
     },
   });
+  const [msg, setMsg] = useState(null);
+
+  const navigate = useNavigate();
+  const user = useUser();
 
   function onSubmit(data) {
-    toast("You submitted the following values", {
-      description: (
-        <pre className="mt-2 w-[320px] rounded-md bg-neutral-950 p-4">
-          <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-        </pre>
-      ),
-    });
+    fetch("https://apis.allsoft.co/api/documentManagement//validateOTP", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        mobile_number: number,
+        otp: data.pin,
+      }),
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Failed to validate OTP");
+        }
+        return response.json();
+      })
+      .then((result) => {
+        if (result.status) {
+          user.setUser(result);
+
+          navigate("/");
+        } else {
+          setMsg(result.message);
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+      });
   }
 
   return (
@@ -82,6 +110,15 @@ export function InputOTPForm() {
 
                 <CardDescription>
                   Please enter the one-time password sent to your phone.
+                  <span className="text-destructive text-sm cursor-pointer">
+                    {msg}{" "}
+                  </span>
+                  <span
+                    onClick={() => setOtpSent(false)}
+                    className="text-blue-400"
+                  >
+                    change number
+                  </span>
                 </CardDescription>
                 <FormMessage />
               </CardContent>
