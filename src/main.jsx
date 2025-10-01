@@ -7,6 +7,7 @@ import App from "./App.jsx";
 import Login from "./components/Login";
 import Home from "./components/Home";
 import { UserProvider } from "./context/userContext";
+import ProtectedRoute from "./middleware/ProtectedRoutes";
 
 const router = createBrowserRouter([
   {
@@ -15,7 +16,11 @@ const router = createBrowserRouter([
     children: [
       {
         path: "/",
-        element: <Home />,
+        element: (
+          <ProtectedRoute>
+            <Home />
+          </ProtectedRoute>
+        ),
       },
       {
         path: "/login",
