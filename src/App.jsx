@@ -9,7 +9,7 @@ function App() {
   const [count, setCount] = useState(0);
 
   return (
-    <div className="h-[100vh] w-[100vw] ">
+    <div className="h-[100vh] w-[100vw]  flex justify-center items-center">
       <Outlet />
     </div>
   );
