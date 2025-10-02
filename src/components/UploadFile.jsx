@@ -32,42 +32,21 @@ const NAMES = ["nitin", "Girish", "gaurav"];
 const DEPARTMENTS = ["Accounts", "HR", "IT", "Finance"];
 
 function UploadFile() {
+  const [preview, setPreview] = useState(null);
+
   const [date, setDate] = useState();
   const [majorHead, setMajorHead] = useState("");
   const [minorHead, setMinorHead] = useState("");
   const [remarks, setRemarks] = useState("");
   const [file, setFile] = useState(null);
 
-  const { token, userId } = useUser().user.data;
+  const { token, user_Id } = useUser().user.data;
   // const
   // console.log(user);
 
   const [tags, setTags] = useState([]);
   const [allTags, setAllTags] = useState([]);
   const [tagInput, setTagInput] = useState("");
-
-  // fetch pre-existing tags
-
-  // const fetchTags = async () => {
-  //   try {
-  //     const res = await fetch(TAGS_API, {
-  //       method: "POST",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //         token: token, // just pass the token string
-  //       },
-  //       body: JSON.stringify({ term }), // <-- API expects this
-  //     });
-
-  //     const data = await res.json();
-
-  //     if (Array.isArray(data.data)) {
-  //       setAllTags(data.data.map((t) => t.tag_name));
-  //     }
-  //   } catch (error) {
-  //     console.error("Error fetching tags:", error);
-  //   }
-  // };
 
   const handleAddTag = () => {
     if (tagInput && !tags.includes(tagInput)) {
@@ -100,15 +79,24 @@ function UploadFile() {
         document_date: format(date, "dd-MM-yyyy"),
         document_remarks: remarks,
         tags: tags.map((t) => ({ tag_name: t })),
-        user_id: userId,
+        user_id: user_Id,
       })
     );
+    // debug: inspect contents
 
-    const res = await fetch(SAVE_API, {
-      method: "POST",
-      headers: { token: { token } },
-      body: formData,
-    });
+    for (const [key, value] of formData.entries()) {
+      console.log("formData entry:", key, value);
+    }
+    console.log("file instanceof File?", file instanceof File, file);
+
+    const res = await fetch(
+      "https://apis.allsoft.co/api/documentManagement//saveDocumentEntry",
+      {
+        method: "POST",
+        headers: { token: token },
+        body: formData,
+      }
+    );
 
     const result = await res.json();
     console.log("Upload Response:", result);
@@ -116,18 +104,29 @@ function UploadFile() {
     if (result.status) {
       alert(result.message || "Upload successful");
     } else {
-      alert("Upload failed");
+      alert(result.message || "Upload failed");
     }
   };
 
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = () => {
+      setPreview(reader.result); // Base64 string of the image
+    };
+    reader.readAsDataURL(file);
+  }
+
   return (
     <div className=" flex flex-col gap-4 max-w-md w-full">
-      {/* File Input */}
-
       <Label>Upload File (Image/PDF only)</Label>
+      {/* File Input */}
+      {file && (
+        <img src={preview} alt="Preview" className="h-10 w-20 object-cover" />
+      )}
+
       <Input
         type="file"
-        accept=".pdf,image/*"
+        accept=".pdf,.png,.jpg,.jpeg*"
         onChange={(e) => e.target.files && setFile(e.target.files[0])}
       />
 
@@ -224,18 +223,6 @@ function UploadFile() {
               <X size={14} className="cursor-pointer" />
             </span>
           </Badge>
-        ))}
-      </div>
-      <div className="">
-        Suggestions:{" "}
-        {allTags.map((t) => (
-          <span
-            key={t}
-            onClick={() => !tags.includes(t) && setTags([...tags, t])}
-            className="cursor-pointer underline mx-1"
-          >
-            {t}
-          </span>
         ))}
       </div>
 
