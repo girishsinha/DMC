@@ -1,16 +1,52 @@
-# React + Vite
+# Doc Managment System frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This project is a frontend interface for a Document Management System built as part of the Allsoft Front-End Developer assignment.
+It allows users to login via OTP, upload and tag documents, search documents with filters, preview files, and download documents.
 
-Currently, two official plugins are available:
+## Tech Stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+**Framework:** React + vite
 
-## React Compiler
+**UI Library::** Shadcn (for clean UI)
 
-The React Compiler is not enabled on this template. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+**State Management:** React Context API
 
-## Expanding the ESLint configuration
+## Run Locally
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+Clone the project
+
+```bash
+  git clone https://github.com/girishsinha/DMC.git
+```
+
+Go to the project directory
+
+```bash
+  cd my-project
+```
+
+Install dependencies
+
+```bash
+  npm install
+```
+
+Start the server
+
+```bash
+  npm run dev
+```
+
+## Usage/Examples
+
+Enter your phone number and fill OTP
+
+![Login](./public/login.png)
+
+explore file here
+
+![Home](./public/home.png)
+
+upload file here
+
+![Upload](./public/upload.png)
